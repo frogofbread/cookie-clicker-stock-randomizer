@@ -22,7 +22,6 @@ function modeidcreator()
 end
 function modechanger()
   chance = math.random() * 100
-  print(chance)
   if ttmc == 0 then
     if modeid == 3 or modeid == 4 then
       chaoticmodechanger()
