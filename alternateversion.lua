@@ -160,5 +160,7 @@ if chance <= 10 then
   delta2 = delta + 0.15
   delta = delta1 + math.random() * (delta2 - delta1)
 end
+delta = math.max(-5, delta)
+delta = math.min(delta, 5)
 print("price: " .. price.. "\nmode: " .. modename .."\ntime to mode change: "..ttmc.."\ndelta: " .. delta)
 --print the variables
