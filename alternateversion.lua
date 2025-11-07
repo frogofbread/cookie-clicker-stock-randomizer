@@ -60,20 +60,6 @@ function modechanger()
   ttmc = math.random(1, 10)
   end
 end
-function chaoticmodechanger()
-  if modeid == 3 or modeid == 4 then
-    chance = math.random() * 100
-    if chance <= 70 then
-      modeid = 5
-      modename = "chaotic"
-      ttmc = math.random(1,10)
-    else
-      modechanger()
-    end
-  else
-    modechanger()
-  end
-end
 function changevalue()
   if modeid == 0 then
     modename = "stable"
@@ -138,7 +124,20 @@ function changevalue()
 end
 modeidcreator()
 changevalue()
-modechanger()
+if ttmc == 0 then
+  if modeid == 3 or modeid == 4 then
+    chance = math.random() * 100
+    if chance <= 70 then
+      modeid = 5
+      modename = "chaotic"
+      ttmc = math.random(1,10)
+    else
+      modechanger()
+    end
+  else
+    modechanger()
+  end
+end
 price = math.max(0.01, price)
 -- make sure price can't go below 0
 --final calcs here
