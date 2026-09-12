@@ -166,4 +166,4 @@ end
 ttmc = ttmc - 1
 -- print everything
 
-print("Value: "..value,"Mode: "..modename,"Delta: "..delta,"Time to mode change: "..ttmc)
+print("price: " .. value .. "\nmode: " .. modename .. "\ntime to mode change: " .. ttmc .. "\ndelta: " .. delta)
