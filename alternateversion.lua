@@ -1,10 +1,21 @@
-price = io.read()
-price = tonumber(price)
+value = io.read()
+value = tonumber(value)
+id = io.read()
+id = tonumber(id)
 modename = io.read()
 ttmc = io.read()
 ttmc = tonumber(ttmc)
 delta = io.read()
 delta = tonumber(delta)
+
+-- actual code below do not touch
+
+delta = delta*0.97
+
+local function random_float(min, max)
+  return min + math.random() * (max - min)
+end
+
 function modeidcreator()
   if modename == "stable" then
     modeid = 0
@@ -20,147 +31,143 @@ function modeidcreator()
     modeid = 5
   end
 end
-function modechanger()
-  chance = math.random() * 100
-  if ttmc == 0 then
-    if chance > 0 and chance <= 12.5 then
-      modeid = 0
-      modename = "stable"
-      delta = delta - 5
-    elseif chance > 12.5 and chance <= 37.5  then
-      modeid = 1
-      modename = "slow rise"
-      delta = delta - 1
-    elseif chance > 37.5 and chance <= 62.5 then
-      modeid = 2
-      modename = "slow fall"
-      delta = delta - 1
-    elseif chance > 62.5 and chance <= 75 then
-      modeid = 3
-      modename = "fast rise"
-      delta1 = delta - 0.015
-      delta2 = delta + 0.135
-      delta = delta1 + math.random() * (delta2 - delta1)
-    elseif chance > 75 and chance <= 87.5 then
-      modeid = 4
-      modename = "fast fall"
-      delta1 = delta - 0.135
-      delta2 = delta + 0.015
-      delta = delta1 + math.random() * (delta2 - delta1)
-    elseif chance > 87.5 then
-      modeid = 5
-      modename = "chaotic"
-      delta1 = delta - 0.15
-      delta2 = delta + 0.15
-      delta = delta1 + math.random() * (delta2 - delta1)
-    end
-  ttmc = math.random(1, 10)
-  end
-end
+
 function changevalue()
+  rv = 10*(id+1)+1-1
+  valueadd = (rv - value)*0.01
+  valueadd = valueadd + (3*random_float(-1, 1)^11)
+  delta = delta + random_float(-0.05, 0.05)
+
+  chance = math.random(1,100)
+  if chance <= 15 then
+    valueadd = valueadd + random_float(-1.5, 1.5)
+  end
+
+  chance = math.random(1,100)
+  if chance <= 3 then
+    valueadd = valueadd + random_float(-5,5)
+  end
+
+  chance = math.random(1,100)
+  if chance <= 10 then
+    delta = delta + random_float(-0.15, 0.15)
+  end
+
   if modeid == 0 then
-    modename = "stable"
-    price1 = price - 0.025
-    price2 = price + 0.025
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.05)
+    delta = delta + random_float(-0.025, 0.025)
   elseif modeid == 1 then
-    modename = "slow rise"
-    price1 = price - 0.005
-    price2 = price + 0.045
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.01)
+    delta = delta + random_float(-0.005, 0.045)
   elseif modeid == 2 then
-    modename = "slow fall"
-    price1 = price - 0.045
-    price2 = price + 0.005
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.01)
+    delta = delta + random_float(-0.045, 0.005)
   elseif modeid == 3 then
-    modename = "fast rise"
-    price1 = price
-    price2 = price + 5
-    price = price1 + math.random() * (price2 - price1)
-    chance = math.random() * 100
-    if chance >= 30 then
-      price1 = price - 3
-      price2 = price + 7
-      price = price1 + math.random() * (price2 - price1)
-      delta1 = delta -0.05
-      delta2 = delta + 0.05
-      delta = delta1 + math.random() * (delta2 - delta1)
+    valueadd = valueadd + random_float(0,5)
+    delta = delta + random_float(-0.015, 0.135)
+    chance = math.random(1,100)
+    if chance <= 30 then
+      valueadd = valueadd + random_float(-7,3)
+      delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 4 then
-    modename = "fast fall"
-    price1 = price - 5
-    price2 = price
-    price = price1 + math.random() * (price2 - price1)
-    chance = math.random() * 100
-    if chance >= 30 then
-      price1 = price - 7
-      price2 = price + 3
-      price = price1 + math.random() * (price2 - price1)
+    valueadd = valueadd + random_float(-5,0)
+    delta = delta + random_float(-0.135, 0.015)
+    chance = math.random(1,100)
+    if chance <= 30 then
+      valueadd = valueadd + random_float(-3,7)
+      delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 5 then
-    modename = "chaotic"
-    if chance >= 50 then
-      price1 = price - 5
-      price2 = price + 5
-      price = price1 + math.random() * (price2 - price1)
+    delta = delta + random_float(-0.15, 0.15)
+    chance = math.random(1,100)
+    if chance <= 50 then
+      valueadd = valueadd + random_float(-5,5)
     end
-    if chance >= 20 then
-      delta1 = delta - 1
-      delta2 = delta + 1
-      delta = delta1 + math.random() * (delta2 - delta1)
+    chance = math.random(1,100)
+    if chance <= 20 then
+      delta = random_float(-1,1)
     end
-  end
-  chance = math.random() * 100
-  if chance <= 3 and modeid == 3 then
-    modeid = 4
-    modename = "fast fall" 
-  end
-  ttmc = ttmc - 1
-  price = price + (price * (delta/100))
-end
-modeidcreator()
-changevalue()
-if ttmc == 0 then
-  if modeid == 3 or modeid == 4 then
-    chance = math.random() * 100
-    if chance <= 70 then
-      modeid = 5
-      modename = "chaotic"
-      ttmc = math.random(1,10)
-    else
-      modechanger()
-    end
-  else
-    modechanger()
   end
 end
 
-price = math.max(0.01, price)
--- make sure price can't go below 0
---final calcs here
-delta1 = delta - 0.05
-delta2 = delta + 0.05
-delta = delta1 + math.random() * (delta2 - delta1)
-chance = math.random() * 100
-if chance <= 15 then
-  price1 = price - 1.5
-  price2 = price + 1.5
-  price = price1 + math.random() * (price2 - price1)
+function modechanger()
+  if ttmc == 0 then
+    chance = math.random()*100
+    if modeid == 0 or modeid == 1 or modeid == 2 or modeid == 5 then
+      if chance <= 12.5 then
+        modeid = 0
+        modename = "stable"
+      elseif chance <= 37.5 and chance >= 12.5 then
+        modeid = 1
+        modename = "slow rise"
+      elseif chance <= 62.5 and chance >= 37.5 then
+        modeid = 2
+        modename = "slow fall"
+      elseif chance <= 75 and chance >= 62.5 then
+        modeid = 3
+        modename = "fast rise"
+      elseif chance <= 87.5 and chance >= 75 then
+        modeid = 4
+        modename = "fast fall"
+      elseif chance <= 100 and chance >= 87.5 then
+        modeid = 5
+        modename = "chaotic"
+      end
+    elseif modeid == 3 or modeid == 4 then
+      if chance <= 70 then
+        modeid = 5
+        modename = "chaotic"
+      else
+        chance = math.random()*100
+        if chance <= 12.5 then
+          modeid = 0
+          modename = "stable"
+        elseif chance <= 37.5 and chance >= 12.5 then
+          modeid = 1
+          modename = "slow rise"
+        elseif chance <= 62.5 and chance >= 37.5 then
+          modeid = 2
+          modename = "slow fall"
+        elseif chance <= 75 and chance >= 62.5 then
+          modeid = 3
+          modename = "fast rise"
+        elseif chance <= 87.5 and chance >= 75 then
+          modeid = 4
+          modename = "fast fall"
+        elseif chance <= 100 and chance >= 87.5 then
+          modeid = 5
+          modename = "chaotic"
+        end
+      end
+    end
+    ttmc = math.random(1,70)
+  end
 end
-chance = math.random() * 100
-if chance <= 3 then
-  price1 = price - 5
-  price2 = price - 5
-  price = price1 + math.random() * (price2 - price1)
+
+-- add delta to value
+value = value + delta
+
+modeidcreator()
+changevalue()
+modechanger()
+
+-- final calcs
+value = value + valueadd
+value = math.max(1,value)
+if value < 5 then
+  value = value + (5-value)/2
+  if delta < 0 then
+    delta = delta*0.95
+  end
 end
-chance = math.random() * 100
-if chance <= 10 then
-  delta1 = delta - 0.15
-  delta2 = delta + 0.15
-  delta = delta1 + math.random() * (delta2 - delta1)
+
+chance = math.random(1,100)
+if chance <= 3 and modeid == 3 then
+  modeid = 4
+  modename = "fast fall"
 end
-delta = math.max(-5, delta)
-delta = math.min(delta, 5)
-print("price: " .. price.. "\nmode: " .. modename .."\ntime to mode change: "..ttmc.."\ndelta: " .. delta)
---print the variables
+
+ttmc = ttmc - 1
+
+print("value: " .. value .. "\nmode: " .. modename .. "\ntime to mode change: " .. ttmc .. "\ndelta: " .. delta)
