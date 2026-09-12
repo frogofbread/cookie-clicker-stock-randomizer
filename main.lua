@@ -1,12 +1,23 @@
-price = 0
--- self explanatory
-modename = "modename here"
--- all lowercase, modename is put there
-ttmc = 6
--- Time till mode change
-delta = 0
--- delta%
-function modeidcreator()
+value = 0.0
+-- the current stock price
+id = 0
+-- the stock ID, determined by order shown in index
+modename = "stable"
+-- the current mode of stock, PLEASE DO ALL LOWERCASE OR ELSE IT WILL BREAK
+ttmc = 0
+-- the time until the mode will change
+delta = 0.0
+-- the background value that increases OR decreases price over time
+
+-- actual code below do not touch
+
+delta = delta*0.97
+
+local function random_float(min, max)
+  return min + math.random() * (max - min)
+end
+
+function modetoid() -- changes the mode name to mode ID
   if modename == "stable" then
     modeid = 0
   elseif modename == "slow rise" then
@@ -21,149 +32,138 @@ function modeidcreator()
     modeid = 5
   end
 end
-function modechanger()
-  chance = math.random() * 100
-  print(chance)
-  if ttmc == 0 then
-    if modeid == 3 or modeid == 4 then
-      chaoticmodechanger()
-    end
-    if chance > 0 and chance <= 12.5 then
-      modeid = 0
-      modename = "stable"
-      delta = delta - 5
-    elseif chance > 12.5 and chance <= 37.5  then
-      modeid = 1
-      modename = "slow rise"
-      delta = delta - 1
-    elseif chance > 37.5 and chance <= 62.5 then
-      modeid = 2
-      modename = "slow fall"
-      delta = delta - 1
-    elseif chance > 62.5 and chance <= 75 then
-      modeid = 3
-      modename = "fast rise"
-      delta1 = delta - 0.015
-      delta2 = delta + 0.135
-      delta = delta1 + math.random() * (delta2 - delta1)
-    elseif chance > 75 and chance <= 87.5 then
-      modeid = 4
-      modename = "fast fall"
-      delta1 = delta - 0.135
-      delta2 = delta + 0.015
-      delta = delta1 + math.random() * (delta2 - delta1)
-    elseif chance > 87.5 then
-      modeid = 5
-      modename = "chaotic"
-      delta1 = delta - 0.15
-      delta2 = delta + 0.15
-      delta = delta1 + math.random() * (delta2 - delta1)
-    end
-  ttmc = math.random(1, 10)
+
+function updatevalue()
+  rv = 10*(id+1)+1-1
+  valueadd = (rv - value)*0.01
+  valueadd = valueadd + (3*random_float(-1, 1)^11)
+  delta = delta + random_float(-0.05, 0.05)
+  rng = math.random(1,100)
+  if rng <= 15 then
+    valueadd = valueadd + random_float(-1.5, 1.5)
   end
-end
-function chaoticmodechanger()
-  if modeid == 3 or modeid == 4 then
-    chance = math.random() * 100
-    if chance <= 70 then
-      modeid = 5
-      modename = "chaotic"
-      ttmc = math.random(1,10)
-    else
-      modechanger()
-    end
-  else
-    modechanger()
+  rng = math.random(1,100)
+  if rng <= 3 then
+    valueadd = valueadd + random_float(-5,5)
   end
-end
-function changevalue()
+  rng = math.random(1,100)
+  if rng <= 10 then
+    delta = delta + random_float(-0.15, 0.15)
+  end
   if modeid == 0 then
-    modename = "stable"
-    price1 = price - 0.025
-    price2 = price + 0.025
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.05)
+    delta = delta + random_float(-0.025, 0.025)
   elseif modeid == 1 then
-    modename = "slow rise"
-    price1 = price - 0.005
-    price2 = price + 0.045
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.01)
+    delta = delta + random_float(-0.005, 0.045)
   elseif modeid == 2 then
-    modename = "slow fall"
-    price1 = price - 0.045
-    price2 = price + 0.005
-    price = price1 + math.random() * (price2 - price1)
+    delta = delta - (delta*0.01)
+    delta = delta + random_float(-0.045, 0.005)
   elseif modeid == 3 then
-    modename = "fast rise"
-    price1 = price
-    price2 = price + 5
-    price = price1 + math.random() * (price2 - price1)
-    chance = math.random() * 100
-    if chance >= 30 then
-      price1 = price - 3
-      price2 = price + 7
-      price = price1 + math.random() * (price2 - price1)
-      delta1 = delta -0.05
-      delta2 = delta + 0.05
-      delta = delta1 + math.random() * (delta2 - delta1)
+    valueadd = valueadd + random_float(0,5)
+    delta = delta + random_float(-0.015, 0.135)
+    rng = math.random(1,100)
+    if rng <= 30 then
+      valueadd = valueadd + random_float(-7,3)
+      delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 4 then
-    modename = "fast fall"
-    price1 = price - 5
-    price2 = price
-    price = price1 + math.random() * (price2 - price1)
-    chance = math.random() * 100
-    if chance >= 30 then
-      price1 = price - 7
-      price2 = price + 3
-      price = price1 + math.random() * (price2 - price1)
+    valueadd = valueadd + random_float(-5,0)
+    delta = delta + random_float(-0.135, 0.015)
+    rng = math.random(1,100)
+    if rng <= 30 then
+      valueadd = valueadd + random_float(-3,7)
+      delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 5 then
-    modename = "chaotic"
-    if chance >= 50 then
-      price1 = price - 5
-      price2 = price + 5
-      price = price1 + math.random() * (price2 - price1)
+    delta = delta + random_float(-0.15, 0.15)
+    rng = math.random(1,100)
+    if rng <= 50 then
+      valueadd = valueadd + random_float(-5,5)
     end
-    if chance >= 20 then
-      delta1 = delta - 1
-      delta2 = delta + 1
-      delta = delta1 + math.random() * (delta2 - delta1)
+    rng = math.random(1,100)
+    if rng <= 20 then
+      delta = random_float(-1,1)
     end
   end
-  chance = math.random() * 100
-  if chance <= 3 and modeid == 3 then
-    modeid = 4
-    modename = "fast fall" 
-  end
-  ttmc = ttmc - 1
-  price = price + (price * (delta/100))
 end
-modeidcreator()
-changevalue()
+
+function modechanger()
+  if ttmc == 0 then
+    rng = math.random()*100
+    if modeid == 0 or modeid == 1 or modeid == 2 or modeid == 5 then
+      if rng <= 12.5 then
+        modeid = 0
+        modename = "stable"
+      elseif rng <= 37.5 and rng >= 12.5 then
+        modeid = 1
+        modename = "slow rise"
+      elseif rng <= 62.5 and rng >= 37.5 then
+        modeid = 2
+        modename = "slow fall"
+      elseif rng <= 75 and rng >= 62.5 then
+        modeid = 3
+        modename = "fast rise"
+      elseif rng <= 87.5 and rng >= 75 then
+        modeid = 4
+        modename = "fast fall"
+      elseif rng <= 100 and rng >= 87.5 then
+        modeid = 5
+        modename = "chaotic"
+      end
+    elseif modeid == 3 or modeid == 4 then
+      if rng <= 70 then
+        modeid = 5
+        modename = "chaotic"
+      else
+        rng = math.random()*100
+        if rng <= 12.5 then
+          modeid = 0
+          modename = "stable"
+        elseif rng <= 37.5 and rng >= 12.5 then
+          modeid = 1
+          modename = "slow rise"
+        elseif rng <= 62.5 and rng >= 37.5 then
+          modeid = 2
+          modename = "slow fall"
+        elseif rng <= 75 and rng >= 62.5 then
+          modeid = 3
+          modename = "fast rise"
+        elseif rng <= 87.5 and rng >= 75 then
+          modeid = 4
+          modename = "fast fall"
+        elseif rng <= 100 and rng >= 87.5 then
+          modeid = 5
+          modename = "chaotic"
+        end
+      end
+    end
+    ttmc = math.random(1,70)
+  end
+end
+
+-- add delta to value
+value = value + delta
+
+modetoid()
+updatevalue()
 modechanger()
-price = math.max(0.01, price)
--- make sure price can't go below 0
---final calcs here
-delta1 = delta - 0.05
-delta2 = delta + 0.05
-delta = delta1 + math.random() * (delta2 - delta1)
-chance = math.random() * 100
-if chance <= 15 then
-  price1 = price - 1.5
-  price2 = price + 1.5
-  price = price1 + math.random() * (price2 - price1)
+
+-- final calcs
+value = value + valueadd
+value = math.max(1,value)
+if value < 5 then
+  value = value + (5-value)/2
+  if delta < 0 then
+    delta = delta*0.95
+  end
 end
-chance = math.random() * 100
-if chance <= 3 then
-  price1 = price - 5
-  price2 = price - 5
-  price = price1 + math.random() * (price2 - price1)
+rng = math.random(1,100)
+if rng <= 3 and modeid == 3 then
+  modeid = 4
+  modename = "fast fall"
 end
-chance = math.random() * 100
-if chance <= 10 then
-  delta1 = delta - 0.15
-  delta2 = delta + 0.15
-  delta = delta1 + math.random() * (delta2 - delta1)
-end
-print("price: " .. price.. "\nmode: " .. modename .."\nmodeid: "..modeid.. "\ntime to mode change: "..ttmc.."\ndelta: " .. delta)
---print the variables
+ttmc = ttmc - 1
+-- print everything
+
+print("Value: "..value,"Mode: "..modename,"Delta: "..delta,"Time to mode change: "..ttmc)
