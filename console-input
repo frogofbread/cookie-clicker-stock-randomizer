@@ -1,12 +1,17 @@
-value = io.read()
-value = tonumber(value)
-id = io.read()
-id = tonumber(id)
+io.write("Enter price: ")
+price = tonumber(io.read())
+
+io.write("Enter stock ID: ")
+id = tonumber(io.read())
+
+io.write("Enter mode name: ")
 modename = io.read()
-ttmc = io.read()
-ttmc = tonumber(ttmc)
-delta = io.read()
-delta = tonumber(delta)
+
+io.write("Enter time till mode change: ")
+ttmc = tonumber(io.read())
+
+io.write("Enter delta: ")
+delta = tonumber(io.read())
 
 -- actual code below do not touch
 
@@ -34,18 +39,18 @@ end
 
 function changevalue()
   rv = 10*(id+1)+1-1
-  valueadd = (rv - value)*0.01
-  valueadd = valueadd + (3*random_float(-1, 1)^11)
+  priceadd = (rv - price)*0.01
+  priceadd = priceadd + (3*random_float(-1, 1)^11)
   delta = delta + random_float(-0.05, 0.05)
 
   chance = math.random(1,100)
   if chance <= 15 then
-    valueadd = valueadd + random_float(-1.5, 1.5)
+    priceadd = priceadd + random_float(-1.5, 1.5)
   end
 
   chance = math.random(1,100)
   if chance <= 3 then
-    valueadd = valueadd + random_float(-5,5)
+    priceadd = priceadd + random_float(-5,5)
   end
 
   chance = math.random(1,100)
@@ -63,26 +68,26 @@ function changevalue()
     delta = delta - (delta*0.01)
     delta = delta + random_float(-0.045, 0.005)
   elseif modeid == 3 then
-    valueadd = valueadd + random_float(0,5)
+    priceadd = priceadd + random_float(0,5)
     delta = delta + random_float(-0.015, 0.135)
     chance = math.random(1,100)
     if chance <= 30 then
-      valueadd = valueadd + random_float(-7,3)
+      priceadd = priceadd + random_float(-7,3)
       delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 4 then
-    valueadd = valueadd + random_float(-5,0)
+    priceadd = priceadd + random_float(-5,0)
     delta = delta + random_float(-0.135, 0.015)
     chance = math.random(1,100)
     if chance <= 30 then
-      valueadd = valueadd + random_float(-3,7)
+      priceadd = priceadd + random_float(-3,7)
       delta = delta + random_float(-0.05, 0.05)
     end
   elseif modeid == 5 then
     delta = delta + random_float(-0.15, 0.15)
     chance = math.random(1,100)
     if chance <= 50 then
-      valueadd = valueadd + random_float(-5,5)
+      priceadd = priceadd + random_float(-5,5)
     end
     chance = math.random(1,100)
     if chance <= 20 then
@@ -145,18 +150,18 @@ function modechanger()
   end
 end
 
--- add delta to value
-value = value + delta
+-- add delta to price
+price = price + delta
 
 modeidcreator()
 changevalue()
 modechanger()
 
 -- final calcs
-value = value + valueadd
-value = math.max(1,value)
-if value < 5 then
-  value = value + (5-value)/2
+price = price + priceadd
+price = math.max(1,price)
+if price < 5 then
+  price = price + (5-price)/2
   if delta < 0 then
     delta = delta*0.95
   end
@@ -170,4 +175,4 @@ end
 
 ttmc = ttmc - 1
 
-print("value: " .. value .. "\nmode: " .. modename .. "\ntime to mode change: " .. ttmc .. "\ndelta: " .. delta)
+print("price: " .. price .. "\nmode: " .. modename .. "\ntime to mode change: " .. ttmc .. "\ndelta: " .. delta)
